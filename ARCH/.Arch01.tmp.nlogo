@@ -38,7 +38,7 @@ to repoduce
     hatch-agenti 1 [
       set color red
       move-to empty-patch
-      set size 4
+      set size
     ]
   ];; end if
 end
