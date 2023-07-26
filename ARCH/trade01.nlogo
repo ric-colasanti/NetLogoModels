@@ -24,10 +24,10 @@ vendors-own[ distance-level ]
 
 globals [ max-distance ]
 
-to new-vendor [ dlevel ]
+to new-vendor [ dlevel colour ]
   set distance-level dlevel
   set shape "person"
-  set color green
+  set color colour
 end
 
 to setup
@@ -43,7 +43,7 @@ to setup
     setxy 0 0
     ask neighbors4 [
       sprout-vendors 1 [
-        new-vendor max-distance
+        new-vendor max-distance random 100 + 100
       ]
     ]
   ]
@@ -54,8 +54,9 @@ to setup
   while [ max-distance > 0 ] [
     ask vendors with [ distance-level = max-distance] [
       ask neighbors4 with [ count turtles-here = 0][
+        let parent myself
         sprout-vendors 1 [
-          new-vendor max-distance - 1
+          new-vendor max-distance - 1 [ color ] of parent
         ]
       ]
     ]
