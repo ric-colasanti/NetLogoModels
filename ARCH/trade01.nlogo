@@ -20,7 +20,7 @@
 breed [ producers producer ]
 
 breed [ vendors vendor ]
-vendors-own[ distance-level ]
+vendors-own[ distance-level goods ]
 
 globals [ max-distance ]
 
@@ -28,11 +28,13 @@ to new-vendor [ dlevel colour ]
   set distance-level dlevel
   set shape "person"
   set color colour
+  set goods 0
+  set label goods
 end
 
 to setup
   clear-all
-  set max-distance vendor-depth
+  set max-distance 0
 
   ;;
   ;; create producer
@@ -43,7 +45,7 @@ to setup
     setxy 0 0
     ask neighbors4 [
       sprout-vendors 1 [
-        new-vendor max-distance random 100 + 100
+        new-vendor max-distance gray
       ]
     ]
   ]
@@ -51,16 +53,16 @@ to setup
   ;;
   ;; create surounding vendors
   ;;
-  while [ max-distance > 0 ] [
+  while [ max-distance <  vendor-depth ] [
     ask vendors with [ distance-level = max-distance] [
       ask neighbors4 with [ count turtles-here = 0][
         let parent myself
         sprout-vendors 1 [
-          new-vendor max-distance - 1 [ color ] of parent
+          new-vendor max-distance + 1 gray +  max-distance + 1 * 10
         ]
       ]
     ]
-    set max-distance max-distance - 1
+    set max-distance max-distance + 1
   ]
 
   reset-ticks
@@ -69,11 +71,11 @@ end
 GRAPHICS-WINDOW
 210
 10
-647
-448
+608
+409
 -1
 -1
-13.0
+30.0
 1
 10
 1
@@ -83,10 +85,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-6
+6
+-6
+6
 0
 0
 1
@@ -119,7 +121,7 @@ vendor-depth
 vendor-depth
 0
 5
-4.0
+5.0
 1
 1
 NIL
