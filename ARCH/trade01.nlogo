@@ -1,62 +1,78 @@
-;; Create a turtle type, a breed. I cant call them agents so use Italian
-breed [agenti agente]
+;; Trade model
+;;
+;; 26-07-23
+;;
+;;
+;; trade model
+;; setup
+;;    set max-distance 3
+;;    create producer in center ( 0 0 )
+;;    sprout vendors in the 4 neighbours
+;;         set distance to max-distance
+;;
+;;    while max-distance >0
+;;         find all vendors with distance = max-distance
+;;         sprout vendors in 4 neighbours that are empty
+;;              set distance max-distance -1
+;;         set max-distance maxdistance -1
 
-;; Create 20 agents and randomlu place them within 5 units of the center
+
+breed [ producers producer ]
+
+breed [ vendors vendor ]
+vendors-own[ distance-level ]
+
+globals [ max-distance ]
+
+to new-vendor [ dlevel ]
+  set distance-level dlevel
+  set shape "person"
+  set color green
+end
 
 to setup
   clear-all
-  ;; use value from the dashboard
-  create-agenti number-of-agente [   ;; note I can uses create- with agnents as I can with turtles
-    setxy random  5 random 5
-    set color random 140
-    set shape "circle"
-    set size 1
+  set max-distance vendor-depth
+
+  ;;
+  ;; create producer
+  ;;
+  create-producers 1 [
+    set shape "house"
+    set color red
+    setxy 0 0
+    ask neighbors4 [
+      sprout-vendors 1 [
+        new-vendor max-distance
+      ]
+    ]
   ]
+
+  ;;
+  ;; create surounding vendors
+  ;;
+  while [ max-distance > 0 ] [
+    ask vendors with [ distance-level = max-distance] [
+      ask neighbors4 with [ count turtles-here = 0][
+        sprout-vendors 1 [
+          new-vendor max-distance - 1
+        ]
+      ]
+    ]
+    set max-distance max-distance - 1
+  ]
+
   reset-ticks
-end
-
-;; At each iteration and for each turtle randomly rotate it and then move foward
-to go
-  ask agenti [
-    rt random 360
-    fd random 10 / 10
-  ]
-  ask patches [
-    set pcolor black
-    if count turtles-here = 0 [
-      set pcolor yellow
-    ]
-  ]
-  ask agenti [
-    if random 1000 < repoduction-probability [
-      repoduce
-    ]
-  ]
-  tick ;; remember to add tick
-end
-
-;; repoduce new agente
-;; but only in empty space
-to repoduce
-  if any? neighbors with [ count turtles-here = 0 ][
-    let empty-patch one-of neighbors with [ count turtles-here = 0 ]
-    hatch-agenti 1 [
-      set color color + 0.1
-      move-to empty-patch
-      set shape "circle"
-      set size 1
-    ]
-  ];; end if
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-0
+210
 10
-410
-421
+647
+448
 -1
 -1
-2.0
+13.0
 1
 10
 1
@@ -66,10 +82,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--100
-100
--100
-100
+-16
+16
+-16
+16
 0
 0
 1
@@ -77,10 +93,10 @@ ticks
 30.0
 
 BUTTON
-435
-13
-508
-46
+29
+24
+102
+57
 NIL
 setup
 NIL
@@ -93,109 +109,20 @@ NIL
 NIL
 1
 
-BUTTON
-436
-57
-499
+SLIDER
+30
 90
-go  
-go
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-436
-101
-499
-134
-run
-go
-T
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-SLIDER
-432
-152
-628
-185
-number-of-agente
-number-of-agente
-20
-1000
-20.0
-10
-1
-NIL
-HORIZONTAL
-
-SLIDER
-433
-194
-657
-227
-repoduction-probability
-repoduction-probability
+202
+123
+vendor-depth
+vendor-depth
 0
-100
-100.0
+5
+4.0
 1
 1
 NIL
 HORIZONTAL
-
-MONITOR
-439
-253
-537
-298
-NIL
-count agenti
-17
-1
-11
-
-PLOT
-442
-328
-642
-478
-plot 1
-NIL
-NIL
-0.0
-10.0
-1000.0
-2000.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -10899396 true "" "plot count agenti"
-
-MONITOR
-541
-252
-638
-297
-empty space
-count patches with [ count turtles-here = 0 ]
-17
-1
-11
 
 @#$#@#$#@
 ## WHAT IS IT?
